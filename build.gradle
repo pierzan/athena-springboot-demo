@@ -49,20 +49,19 @@ targetCompatibility = 1.8
 ext {
     hikariVersion = '2.7.8'
     athenaJdbcVersion = '2.0.2'
-    springAwsCloudVersion = '1.2.2.RELEASE'
+    awsSdkVersion = '1.11.5'
 }
 
 dependencies {
     compile group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     compile group: 'org.springframework.boot', name: 'spring-boot-starter'
-//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-aws-autoconfigure', version: rootProject.ext.springAwsCloudVersion
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: rootProject.ext.springAwsCloudVersion
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf'
     compile group: 'org.springframework', name: 'spring-jdbc'
 
 
     compile group: 'com.zaxxer', name: 'HikariCP', version: rootProject.ext.hikariVersion
     compile group: 'Athena', name: 'AthenaJDBC42', version: rootProject.ext.athenaJdbcVersion
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-core', version: rootProject.ext.awsSdkVersion
 
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     compile group: 'com.google.guava', name: 'guava', version: '25.0-jre'
