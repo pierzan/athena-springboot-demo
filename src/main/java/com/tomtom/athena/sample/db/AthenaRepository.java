@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
+import com.tomtom.athena.sample.config.QueriesConfiguration;
 import com.tomtom.athena.sample.db.entities.BusinessesInStateWithReviewsOverview;
 
 @Component
@@ -22,12 +23,13 @@ public class AthenaRepository {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private QueriesConfiguration queriesConfiguration;
 
-    private String schemaName = "yelp-parquet";
 
     public Collection<BusinessesInStateWithReviewsOverview> getTopReviewedBusinesses() {
         log.info("Querying for business with reviews overview records:");
-        String query = "[THE_QUERY]";
+        String query = queriesConfiguration.getTopReviewedStatesQuery();
         List<BusinessesInStateWithReviewsOverview> businesses = jdbcTemplate.query(adjustQuerySchema(query),
             new BeanPropertyRowMapper<BusinessesInStateWithReviewsOverview>(BusinessesInStateWithReviewsOverview.class));
         businesses.forEach(business -> log.info(business.toString()));
@@ -37,7 +39,7 @@ public class AthenaRepository {
     private String adjustQuerySchema(
         final String query) {
         Map<String, String> substitutionMap = Maps.newHashMap();
-        substitutionMap.put("schema", schemaName);
+        substitutionMap.put("schema", queriesConfiguration.getSchema());
         StrSubstitutor substitutor = new StrSubstitutor(substitutionMap);
         return substitutor.replace(query);
     }

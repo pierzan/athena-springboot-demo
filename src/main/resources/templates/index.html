@@ -26,16 +26,18 @@
 
         $(document).ready(function () {
             $("#mapButton").on('click', function (ev) {
-                var $mapButton = $("#mapButton");
-                $mapButton.attr("disabled", true);
-                $mapButton.html("<i class=\"fa fa-refresh fa-spin\"></i> Awaiting for db response...");
+                $("#errorAlert").hide();
+                var clickedButton = $("#mapButton");
+                startLoadingButton(clickedButton);
                 $.ajax({
                     url: "http://localhost:8080/topReviewedStates"
                 }).done(function (data) {
                     initialiseStatesDataset(data, dataset);
-                    $mapButton.attr("disabled", false);
-                    $mapButton.html("here");
-
+                }).fail(function (jqXHR) {
+                    var responseJSON = jqXHR.responseJSON;
+                    handleError(responseJSON);
+                }).always(function () {
+                    stopLoadingButton(clickedButton);
                 });
             });
 
@@ -72,6 +74,28 @@
                 '</div>'].join('');
         }
 
+        function initialiseStatesDataset(data, dataset) {
+            var paletteScale = getColorPalette(data);
+            // fill dataset in appropriate format
+            var stateCodes = getStateCodes(map);
+            data.forEach(function (item) { //
+                var iso = item.state,
+                    value = item.totalNoOfReviews;
+                // add only data from presented states
+                if (stateCodes.indexOf(iso.toUpperCase()) > 0) {
+                    dataset[iso] = {numberOfReviews: value, fillColor: paletteScale(value)};
+                }
+            });
+            map.updateChoropleth(dataset);
+
+        }
+
+        function getStateCodes(map) {
+            return map.svg.selectAll('.datamaps-subunit')[0].map(function (obj) {
+                return obj.__data__.id
+            });
+        }
+
         function getColorPalette(data) {
             // We need to colorize every country based on "numberOfWhatever"
             // colors should be uniq for every value.
@@ -90,33 +114,36 @@
                 .range(["#EFEFFF", "#02386F"]);
         }
 
-        function getStateCodes(map) {
-            return map.svg.selectAll('.datamaps-subunit')[0].map(function (obj) {
-                return obj.__data__.id
-            });
+        function startLoadingButton(clickedButton) {
+            clickedButton.attr("disabled", true);
+            if (!clickedButton.data('original-text')) {
+                clickedButton.data('original-text', clickedButton.html());
+            }
+            clickedButton.html(clickedButton.data('loading-text'));
         }
 
-        function initialiseStatesDataset(data, dataset) {
-            var paletteScale = getColorPalette(data);
-            // fill dataset in appropriate format
-            var stateCodes = getStateCodes(map);
-            data.forEach(function (item) { //
-                var iso = item.state,
-                    value = item.totalNoOfReviews;
-                // add only data from presented states
-                if (stateCodes.indexOf(iso.toUpperCase()) > 0) {
-                    dataset[iso] = {numberOfReviews: value, fillColor: paletteScale(value)};
-                }
-            });
-            map.updateChoropleth(dataset);
-
+        function stopLoadingButton(clickedButton) {
+            clickedButton.attr("disabled", false);
+            clickedButton.html(clickedButton.data('original-text'));
         }
+
+        function handleError(responseJSON) {
+            var errMsg = responseJSON.error + " : " + responseJSON.message;
+            console.log("fail: " + errMsg);
+            $("#errorContent").html(errMsg);
+            $("#errorAlert").show();
+        }
+
     </script>
 </head>
 <body>
+<div id="errorAlert" class="alert alert-danger fade show" role="alert" style="display: none;">
+    <strong>Error!</strong> Error occured during query of database:
+    <p id="errorContent"></p>
+</div>
 <h1>AWS Athena demo application</h1>
 <p>If you want to see most active states
-    <button id="mapButton" type="button" class="btn btn-primary btn-lg">
+    <button id="mapButton" type="button" class="btn btn-primary" data-loading-text="<i class='fa fa-refresh fa-spin '></i> Awaiting for db response...">
         here
     </button>
 </p>
