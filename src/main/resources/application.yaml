@@ -5,12 +5,10 @@ spring:
 # configuration based on instructions from:
 #https://docs.aws.amazon.com/athena/latest/ug/connect-with-jdbc.html
   datasource:
-    url: [jdbcURL]
+    url: [jdbcURL];UID=[awsAccessKey];PWD=[awsSecretKey]
     driver-class-name: com.simba.athena.jdbc42.Driver
     hikari:
       data-source-properties:
       # more details about athena parameters under:
       #https://s3.amazonaws.com/athena-downloads/drivers/JDBC/SimbaAthenaJDBC_2.0.2/docs/Simba+Athena+JDBC+Driver+Install+and+Configuration+Guide.pdf
         s3_staging_dir: s3://aws-athena-query-results-984875998166-eu-west-1
-        aws_credentials_provider_class: com.tomtom.athena.sample.aws.StaticAWSCredentialsProvider
-        aws_credentials_provider_arguments: [awsAccessKey],[awsSecretKey]
