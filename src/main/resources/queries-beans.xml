@@ -5,6 +5,7 @@
 
     <bean id="athenaQuery" class="java.lang.String">
         <constructor-arg>
+            <!-- the query should return 2 columns: state, totalNoOfReviews -->
             <value>
                 <![CDATA[
                  [THE_QUERY]
