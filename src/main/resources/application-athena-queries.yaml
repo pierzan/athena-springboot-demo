@@ -1,5 +1,0 @@
-application:
-  athena:
-    schema: "yelp-parquet"
-# the query should return 2 columns: state, totalNoOfReviews
-    topReviewedStatesQuery: [THE_QUERY]

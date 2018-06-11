@@ -1,9 +1,6 @@
-spring:
-  profiles:
-    include: 'athena-queries'
-
 # configuration based on instructions from:
 #https://docs.aws.amazon.com/athena/latest/ug/connect-with-jdbc.html
+spring:
   datasource:
     url: [jdbcURL];UID=[awsAccessKey];PWD=[awsSecretKey]
     driver-class-name: com.simba.athena.jdbc42.Driver
